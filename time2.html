@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Timetable</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+        body {
+            background: black;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        table {
+            width: 90%;
+            border-collapse: collapse;
+            background: rgba(0, 0, 0, 0.7); /* خلفية داكنة شبه شفافة */
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: float 5s ease-in-out infinite; /* تأثير الطفو */
+            position: relative;
+            z-index: 1;
+        }
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+        th, td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            cursor: pointer;
+            position: relative;
+            transition: 0.3s;
+        }
+        th {
+            background: rgba(255, 255, 255, 0.1);
+            font-weight: bold;
+        }
+        td:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        td:active {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+        }
+        .details {
+            display: none;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #ccc;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="spaceCanvas"></canvas>
+    <table>
+        <tr>
+            <th>Day/Time</th>
+            <th>09:00</th>
+            <th>09:30</th>
+            <th>10:00</th>
+            <th>10:30</th>
+            <th>11:00</th>
+            <th>11:30</th>
+            <th>12:00</th>
+            <th>12:30</th>
+            <th>13:00</th>
+            <th>13:30</th>
+            <th>14:00</th>
+            <th>14:30</th>
+        </tr>
+        <tr>
+            <td>Saturday</td>
+            <td colspan="2" onclick="toggleDetails(this)">
+                MT111<br>mathematics 2 - Lecture
+                <div class="details">
+                    8014278-noha sayed hussien<br>1403 - Classroom<br>(First)
+                </div>
+            </td>
+            <td colspan="2" onclick="toggleDetails(this)">
+                CS212<br>logic design 2 - Lecture
+                <div class="details">
+                    8013961-Samah Mohamed Sayed<br>Melwaly<br>AB203 - Lecture Hall<br>(First)
+                </div>
+            </td>
+            <td colspan="2" onclick="toggleDetails(this)">
+                CS212<br>logic design 2 - Lab
+                <div class="details">
+                    8014128-aya fares mohamed<br>2004 - Classroom<br>(Second)
+                </div>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Sunday</td>
+            <td colspan="2" onclick="toggleDetails(this)">
+                CS114<br>operations research - Lab
+                <div class="details">
+                    8014235-mayar mohamed fekry<br>2405 - Classroom
+                </div>
+            </td>
+            <td colspan="2" onclick="toggleDetails(this)">
+                IT301<br>introduction to web technologies - Lecture
+                <div class="details">
+                    8014061-Noha mahmoud ahmed<br>mahmoud<br>1403 - Classroom<br>(First)
+                </div>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Monday</td>
+            <td colspan="2" onclick="toggleDetails(this)">
+                CS114<br>operations research - Lecture
+                <div class="details">
+                    8013214-Mohamed Abdelwahab<br>Mohamed<br>1404 - Classroom<br>(First)
+                </div>
+            </td>
+            <td colspan="2" onclick="toggleDetails(this)">
+                REM101<br>scientific thinking - Lecture
+                <div class="details">
+                    8013259-Mohamed Ali Mohamed<br>Mohamed<br>AB203 - Lecture Hall<br>(First)
+                </div>
+            </td>
+            <td colspan="2" onclick="toggleDetails(this)">
+                IT301<br>introduction to web technologies - Lab
+                <div class="details">
+                    8009760-mohamed shaban Abdeen<br>14210 - Computer Lab<br>(First)
+                </div>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Tuesday</td>
+            <td colspan="2" onclick="toggleDetails(this)">
+                ENG111A<br>eng 111 a - Lecture
+                <div class="details">
+                    8002508-frghai ali mahrouk gad<br>8002508-frghai ali mahrouk gad<br>140001-VIRTUAL - Computer Lab - VIRTUAL<br>(First)
+                </div>
+            </td>
+            <td colspan="2" onclick="toggleDetails(this)">
+                CS-121-P2<br>aptech computer skills level one – part 2 - Lecture
+                <div class="details">
+                    8009418-shrouk reda kamal<br>142009-VIRTUAL - Computer Lab - VIRTUAL<br>(First)
+                </div>
+            </td>
+            <td colspan="2" onclick="toggleDetails(this)">
+                CS112<br>computer language 1 - Lab
+                <div class="details">
+                    8014249-rehab ahmed khalifa<br>8014110-esraa salem ewees<br>14105 - Computer Lab<br>(First)
+                </div>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Wednesday</td>
+            <td colspan="2" onclick="toggleDetails(this)">
+                MT111<br>mathematics 2 - Lab
+                <div class="details">
+                    8014227-noursin moisen salah edun<br>AB201 - Classroom<br>(First)
+                </div>
+            </td>
+            <td colspan="2" onclick="toggleDetails(this)">
+                CS112<br>computer language 1 - Lecture
+                <div class="details">
+                    8013959-mai mahmoud ahmed<br>1404 - Classroom<br>(First)
+                </div>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Thursday</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Friday</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+    <script>
+        const canvas = document.getElementById("spaceCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let stars = [];
+        const numStars = 200;
+
+        // إنشاء النجوم
+        for (let i = 0; i < numStars; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 2,
+                speedX: Math.random() * 0.5 - 0.25,
+                speedY: Math.random() * 0.5 - 0.25
+            });
+        }
+
+        // رسم النجوم
+        function drawStars() {
+            ctx.fillStyle = "white";
+            stars.forEach(star => {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fill();
+                star.x += star.speedX;
+                star.y += star.speedY;
+
+                if (star.x < 0 || star.x > canvas.width) star.speedX *= -1;
+                if (star.y < 0 || star.y > canvas.height) star.speedY *= -1;
+            });
+        }
+
+        // تبديل عرض التفاصيل
+        function toggleDetails(cell) {
+            const details = cell.querySelector(".details");
+            details.classList.toggle("show");
+        }
+
+        // رسم كل شيء
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // رسم النجوم
+            drawStars();
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
